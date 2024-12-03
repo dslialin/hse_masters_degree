@@ -54,4 +54,13 @@
 
 ### Скриншоты работы сервиса fastapi:
 1. Pycharm
-[1](homework_ml_1/screens/1.png)
+![Pycharm](./screens/1.png)
+
+2. Файл csv с предсказаниями
+![Pycharm](./screens/2.png)
+
+3. Презсказание на http://127.0.0.1:8000/docs по json одного объекта (одной машины)
+![Pycharm](./screens/3.png)
+
+4. Презсказание на http://127.0.0.1:8000/docs по набору объектов (csv)
+![Pycharm](./screens/4.png)
