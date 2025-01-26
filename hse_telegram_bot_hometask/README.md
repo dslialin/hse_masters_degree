@@ -1,214 +1,90 @@
-## Разработка Telegram-бота с использованием aiogram 3.x
+# Telegram-бот для учёта воды и калорий
 
-### 1. Установка и настройка
+## Описание
 
-#### Установка библиотеки
+Этот Telegram-бот помогает пользователям вести учёт потребляемой воды, калорий, а также физической активности. Бот поддерживает настройку профиля, добавление записей о воде, еде и тренировках, а также предоставляет возможность визуализации прогресса с помощью графиков.
 
-```bash
-pip install aiogram
+## Установка
+
+1. Склонируйте репозиторий:
+   ```bash
+   git clone <URL вашего репозитория>
+   cd <папка проекта>
+   ```
+
+2. Создайте виртуальное окружение и активируйте его:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate # Для Linux/Mac
+   venv\Scripts\activate   # Для Windows
+   ```
+
+3. Установите зависимости:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. Создайте файл `.env` в корневой папке проекта и добавьте следующие переменные:
+   ```env
+   BOT_TOKEN=ВашТокенTelegram
+   OPENWEATHER_API_KEY=ВашAPIключOpenWeather
+   ```
+
+5. Запустите бота:
+   ```bash
+   python bot.py
+   ```
+
+## Команды
+
+- `/start` — Приветствие и краткое описание бота.
+- `/help` — Список доступных команд.
+- `/set_profile` — Настройка профиля (вес, рост, возраст, активность, город).
+- `/log_water <количество>` — Запись потребляемой воды (мл).
+- `/log_food <продукт>` — Запись потребляемой еды (поиск калорий через OpenFoodFacts).
+- `/log_workout <тип> <минуты>` — Запись тренировки (расчёт сожжённых калорий).
+- `/check_progress` — Прогресс по воде и калориям за день.
+- `/show_graphs` — Построение графиков прогресса (вода и калории).
+
+## Функциональность
+
+- **Настройка профиля:**
+  Пользователь вводит свои данные (вес, рост, возраст, активность, город), которые используются для расчёта дневной нормы воды и калорий.
+
+- **Учёт воды и калорий:**
+  - Запись количества выпитой воды.
+  - Запись потребляемой еды с автоматическим поиском калорий через OpenFoodFacts.
+  - Запись тренировок с расчётом сожжённых калорий.
+
+- **Прогресс:**
+  - Отображение текущего прогресса за день.
+  - Визуализация прогресса с помощью графиков (PNG).
+
+## Пример использования
+
+1. Настройте профиль с помощью команды `/set_profile`.
+2. Добавьте записи о воде и еде через команды `/log_water` и `/log_food`.
+3. Просмотрите прогресс за день через `/check_progress`.
+4. Постройте графики прогресса с помощью `/show_graphs`.
+
+## Пример .env файла
+
+```env
+BOT_TOKEN=ВашТокенTelegram
+OPENWEATHER_API_KEY=ВашAPIключOpenWeather
 ```
 
-#### Создание бота в Telegram
+## Зависимости
 
-1. Перейдите к боту `@BotFather` в Telegram.
-2. Используйте команду `/newbot` для создания нового бота.
-3. Сохраните токен вашего бота.
+- `aiogram` — для работы с Telegram API.
+- `aiohttp` — для выполнения HTTP-запросов.
+- `matplotlib` — для построения графиков.
+- `python-dotenv` — для работы с переменными окружения.
 
-### 2. Основные компоненты aiogram
+## Разработчики
 
-#### **Bot**
+Проект создан для учебных целей.
 
-Класс `Bot` предоставляет доступ к Telegram API.
+## Лицензия
 
-```python
-from aiogram import Bot
-
-bot = Bot(token="YOUR_BOT_TOKEN")
-```
-
-#### **Dispatcher**
-
-`Dispatcher` управляет обработчиками событий.
-
-```python
-from aiogram import Dispatcher
-
-dp = Dispatcher()
-```
-
-#### **Handlers (Обработчики)**
-
-Обработчики обрабатывают события, такие как команды, текстовые сообщения или нажатия кнопок.
-
-```python
-from aiogram.types import Message
-from aiogram import Router
-
-router = Router()
-
-@router.message()
-async def handle_message(message: Message):
-    await message.reply(f"Вы отправили: {message.text}")
-```
-
-#### **Middleware**
-
-Middleware позволяет выполнять действия до и после обработки события.
-
-```python
-from aiogram import BaseMiddleware
-from aiogram.types import Message
-
-class LoggingMiddleware(BaseMiddleware):
-    async def __call__(self, handler, event: Message, data: dict):
-        print(f"Получено сообщение: {event.text}")
-        return await handler(event, data)
-```
-
-### 3. Создание простого бота
-
-#### Файл `bot.py`
-
-```python
-import asyncio
-from aiogram import Bot, Dispatcher
-from aiogram.types import Message
-from aiogram.filters import Command
-
-# Создаем экземпляры бота и диспетчера
-bot = Bot(token="YOUR_BOT_TOKEN")
-dp = Dispatcher()
-
-# Обработчик команды /start
-@dp.message(Command("start"))
-async def cmd_start(message: Message):
-    await message.reply("Добро пожаловать! Я ваш бот.")
-
-# Обработчик команды /help
-@dp.message(Command("help"))
-async def cmd_help(message: Message):
-    await message.reply("Я могу ответить на команды /start и /help.")
-
-# Основная функция запуска бота
-async def main():
-    print("Бот запущен!")
-    await dp.start_polling(bot)
-
-if __name__ == "__main__":
-    asyncio.run(main())
-```
-
-
-### 4. Обработка команд, текста и кнопок
-
-#### Обработка текста
-
-```python
-@dp.message()
-async def echo_message(message: Message):
-    await message.reply(f"Вы сказали: {message.text}")
-```
-
-#### Инлайн-клавиатуры
-
-```python
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-
-keyboard = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [InlineKeyboardButton(text="Кнопка 1", callback_data="btn1")],
-        [InlineKeyboardButton(text="Кнопка 2", callback_data="btn2")],
-    ]
-)
-
-@dp.message(Command("keyboard"))
-async def show_keyboard(message: Message):
-    await message.reply("Выберите опцию:", reply_markup=keyboard)
-
-@dp.callback_query()
-async def handle_callback(callback_query):
-    if callback_query.data == "btn1":
-        await callback_query.message.reply("Вы нажали Кнопка 1")
-    elif callback_query.data == "btn2":
-        await callback_query.message.reply("Вы нажали Кнопка 2")
-```
-
-### 5. Работа с состояниями (FSM)
-
-**FSM** (Finite State Machine) позволяет управлять сложными сценариями.
-
-#### Определение состояний
-
-```python
-from aiogram.fsm.state import State, StatesGroup
-
-class Form(StatesGroup):
-    name = State()
-    age = State()
-```
-
-#### Использование состояний
-
-```python
-from aiogram.fsm.context import FSMContext
-
-@dp.message(Command("form"))
-async def start_form(message: Message, state: FSMContext):
-    await message.reply("Как вас зовут?")
-    await state.set_state(Form.name)
-
-@dp.message(Form.name)
-async def process_name(message: Message, state: FSMContext):
-    await state.update_data(name=message.text)
-    await message.reply("Сколько вам лет?")
-    await state.set_state(Form.age)
-
-@dp.message(Form.age)
-async def process_age(message: Message, state: FSMContext):
-    data = await state.get_data()
-    name = data.get("name")
-    age = message.text
-    await message.reply(f"Привет, {name}! Тебе {age} лет.")
-    await state.clear()
-```
-
-### 6. Расширенные возможности
-
-#### Работа с API
-
-```python
-import aiohttp
-
-@dp.message(Command("joke"))
-async def get_joke(message: Message):
-    async with aiohttp.ClientSession() as session:
-        async with session.get("https://api.chucknorris.io/jokes/random") as response:
-            joke = await response.json()
-            await message.reply(joke["value"])
-```
-
-### 7. Деплой бота
-
-#### Использование Docker
-
-Создайте файл `Dockerfile`:
-
-```dockerfile
-FROM python:3.10
-
-WORKDIR /app
-
-COPY requirements.txt requirements.txt
-RUN pip install -r requirements.txt
-
-COPY . .
-
-CMD ["python", "bot.py"]
-```
-
-Соберите и запустите образ:
-
-```bash
-docker build -t my_telegram_bot .
-docker run -d --name my_telegram_bot my_telegram_bot
-```
+Этот проект распространяется под лицензией MIT.
