@@ -88,3 +88,6 @@ OPENWEATHER_API_KEY=ВашAPIключOpenWeather
 ## Лицензия
 
 Этот проект распространяется под лицензией MIT.
+
+## Пример работы бота
+![Gif](images/bot.gif)
