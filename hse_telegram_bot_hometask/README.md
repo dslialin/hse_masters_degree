@@ -91,3 +91,7 @@ OPENWEATHER_API_KEY=ВашAPIключOpenWeather
 
 ## Пример работы бота
 ![Gif](images/bot.gif)
+
+## Deploy
+![Alive](images/bot_alive.png)
+![Commands](images/bot_commands.png)
