@@ -2,3 +2,4 @@ aiogram==3.*
 aiohttp
 python-dotenv
 matplotlib
+Flask==2.2.2
